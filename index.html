@@ -4,80 +4,46 @@
   <meta charset="UTF-8">
   <title>FVVYN 3Dロゴテスト</title>
   <style>
-    body {
-      margin: 0;
-      background-color: #000;
-      overflow: hidden;
-    }
-    canvas {
-      display: block;
-    }
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      background-image: repeating-linear-gradient(transparent 0px, transparent 1px, rgba(255,255,255,0.02) 1px, rgba(255,255,255,0.02) 2px);
-      z-index: 10;
-      animation: flicker 2s infinite;
-    }
-    @keyframes flicker {
-      0%, 100% { opacity: 0.02; }
-      50% { opacity: 0.05; }
-    }
+    body { margin: 0; background-color: #000; overflow: hidden; }
+    canvas { display: block; }
   </style>
 </head>
 <body>
-  <div class="overlay"></div>
-
-  <!-- Three.js本体＆必要なパーツ -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/loaders/GLTFLoader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/controls/OrbitControls.js"></script>
 
   <script>
-    // ベース設定
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 1.5, 4);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 1, 4);
+
+    const renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // ライト設定（明るさUP⤴️）
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
-    hemiLight.position.set(0, 20, 0);
-    scene.add(hemiLight);
+    // ライト強化🔥
+    const light1 = new THREE.DirectionalLight(0xffffff, 2);
+    light1.position.set(5, 10, 10);
+    scene.add(light1);
 
-    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
-    dirLight1.position.set(5, 10, 7);
-    scene.add(dirLight1);
+    const ambient = new THREE.AmbientLight(0xffffff, 1.5);
+    scene.add(ambient);
 
-    const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
-    dirLight2.position.set(-5, -5, -5);
-    scene.add(dirLight2);
-
-    // コントロール
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.dampingFactor = 0.1;
-    controls.enableZoom = false;
     controls.autoRotate = true;
 
-    // 3Dモデル読み込み（仮：ヘルメット）
     const loader = new THREE.GLTFLoader();
     loader.load(
       'https://threejs.org/examples/models/gltf/DamagedHelmet/glTF-Binary/DamagedHelmet.glb',
       function (gltf) {
         const model = gltf.scene;
-        model.scale.set(2.5, 2.5, 2.5);
-        model.position.set(0, -1, 0);
+        model.scale.set(2, 2, 2);
         scene.add(model);
 
-        // 中心に配置調整
+        // モデル中心に
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         model.position.sub(center);
@@ -88,7 +54,6 @@
       }
     );
 
-    // アニメーション
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
@@ -96,7 +61,6 @@
     }
     animate();
 
-    // ウィンドウサイズ対応
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();

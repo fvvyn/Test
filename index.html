@@ -16,8 +16,8 @@
     import { OrbitControls } from 'https://unpkg.com/three@0.150.1/examples/jsm/controls/OrbitControls.js';
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({antialias: true});
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
@@ -28,19 +28,19 @@
     controls.enablePan = false;
 
     const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(1, 1, 1);
+    light.position.set(2, 2, 2);
     scene.add(light);
 
     const loader = new GLTFLoader();
-    let model;
-
-loader.load('dresdener_zeus_lp_uv_ausgerichtet.glb', (gltf) => {
-  scene.add(gltf.scene);
-});
-      scene.add(model);
-    }, undefined, (error) => {
-      console.error('読み込みエラー:', error);
-    });
+    loader.load('dresdener_zeus_lp_uv_ausgerichtet.glb',
+      (gltf) => {
+        scene.add(gltf.scene);
+      },
+      undefined,
+      (error) => {
+        console.error('GLB読み込みエラー:', error);
+      }
+    );
 
     camera.position.set(0, 1, 3);
 

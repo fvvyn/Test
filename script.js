@@ -1,27 +1,33 @@
-// シーン、カメラ、レンダラーの設定
+// シーン、カメラ、レンダラー設定
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// 環境光＆方向光
+// 環境光
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
 
-// コントロール（マウスで回転できる）
+// コントロール設定
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-// GLTFLoaderでdog.glbを読み込む
+// 外部URLの正常なglbモデル読み込み
 const loader = new THREE.GLTFLoader();
-loader.load('dog.glb', function (gltf) {
-  scene.add(gltf.scene);
-  gltf.scene.position.set(0, 0, 0);
-}, undefined, function (error) {
-  console.error('エラー発生:', error);
-});
+loader.load(
+  'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Duck/glTF-Binary/Duck.glb',
+  function (gltf) {
+    const model = gltf.scene;
+    model.scale.set(1, 1, 1);
+    model.position.set(0, 0, 0);
+    scene.add(model);
+  },
+  undefined,
+  function (error) {
+    console.error('エラー発生:', error);
+  }
+);
 
-// カメラ位置
 camera.position.set(0, 1, 5);
 
 // アニメーションループ
@@ -34,7 +40,8 @@ animate();
 
 // リサイズ対応
 window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+

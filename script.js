@@ -38,7 +38,7 @@ controls.addEventListener('end', () => {
 // モデル読み込み（GLTF形式）
 const loader = new THREE.GLTFLoader();
 loader.load(
-  'fvvyn.glb',
+  'fvvynlogo.glb',
   function (gltf) {
     model = gltf.scene;
 

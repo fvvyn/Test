@@ -12,10 +12,9 @@ scene.add(ambientLight);
 // コントロール設定
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-// 🔧 ここを追加（GLTFLoaderのインスタンス）
+// 🔧 GLTFLoader を宣言（これが必要！）
 const loader = new THREE.GLTFLoader();
 
-// base.glb の読み込み
 loader.load(
   'base.glb',
   function (gltf) {
@@ -29,6 +28,7 @@ loader.load(
     console.error('エラー発生:', error);
   }
 );
+
 
 // カメラ位置設定
 camera.position.set(0, 1, 5);

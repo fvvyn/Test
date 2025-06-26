@@ -13,7 +13,8 @@ scene.add(ambientLight);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 loader.load(
-  'https://drive.google.com/uc?export=download&id=1EeORSVCFI-amPFr8LWLVcCITLzDZ0VgQ',
+  'base.glb',
+
   function (gltf) {
     const model = gltf.scene;
     model.scale.set(1, 1, 1);

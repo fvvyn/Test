@@ -12,9 +12,12 @@ scene.add(ambientLight);
 // コントロール設定
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
+// 🔧 ここを追加（GLTFLoaderのインスタンス）
+const loader = new THREE.GLTFLoader();
+
+// base.glb の読み込み
 loader.load(
   'base.glb',
-
   function (gltf) {
     const model = gltf.scene;
     model.scale.set(1, 1, 1);
@@ -27,7 +30,7 @@ loader.load(
   }
 );
 
-
+// カメラ位置設定
 camera.position.set(0, 1, 5);
 
 // アニメーションループ

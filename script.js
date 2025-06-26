@@ -12,10 +12,8 @@ scene.add(ambientLight);
 // コントロール設定
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-// 外部URLの正常なglbモデル読み込み
-const loader = new THREE.GLTFLoader();
 loader.load(
-  'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Duck/glTF-Binary/Duck.glb',
+  'https://drive.google.com/uc?export=download&id=1EeORSVCFI-amPFr8LWLVcCITLzDZ0VgQ',
   function (gltf) {
     const model = gltf.scene;
     model.scale.set(1, 1, 1);
@@ -27,6 +25,7 @@ loader.load(
     console.error('エラー発生:', error);
   }
 );
+
 
 camera.position.set(0, 1, 5);
 

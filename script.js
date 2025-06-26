@@ -30,13 +30,13 @@ loader.load(
   function (gltf) {
     const model = gltf.scene;
 
-    // モデルの透明対策・色リセット（念のため）
     model.traverse((child) => {
       if (child.isMesh && child.material) {
+        child.material.side = THREE.DoubleSide; // ★ 追加！
         child.material.transparent = false;
         child.material.opacity = 1.0;
         if (child.material.color) {
-          child.material.color.set(0xffffff); // 真っ黒対策：白でリセット
+          child.material.color.set(0xffffff);
         }
       }
     });
@@ -50,6 +50,7 @@ loader.load(
     console.error('エラー発生:', error);
   }
 );
+
 
 // カメラ位置
 camera.position.set(0, 1, 5);

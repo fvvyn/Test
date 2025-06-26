@@ -4,11 +4,11 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xffffff); // 背景：白
+renderer.outputEncoding = THREE.sRGBEncoding; // 色の補正（大事）
 document.body.appendChild(renderer.domElement);
 
 // 光源（環境光＋方向性ライト＋ヘミスフィア）
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-scene.add(ambientLight);
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7.5);
@@ -20,22 +20,16 @@ scene.add(hemiLight);
 
 // カメラ操作コントロール
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;       // ← 惰性くるくるON！
-controls.dampingFactor = 0.05;       // ← 惰性の強さ（好みで調整）
+controls.enableDamping = true;       
+controls.dampingFactor = 0.05;
 
-// 自動回転制御用
+// 自動回転制御
 let model;
 let isUserInteracting = false;
+controls.addEventListener('start', () => isUserInteracting = true);
+controls.addEventListener('end', () => isUserInteracting = false);
 
-// ユーザーが触ったら自動回転を止める
-controls.addEventListener('start', () => {
-  isUserInteracting = true;
-});
-controls.addEventListener('end', () => {
-  isUserInteracting = false;
-});
-
-// モデル読み込み（GLTF形式）
+// モデル読み込み
 const loader = new THREE.GLTFLoader();
 loader.load(
   'fvvyn.glb',
@@ -47,18 +41,23 @@ loader.load(
         child.material.side = THREE.DoubleSide;
         child.material.transparent = false;
         child.material.opacity = 1.0;
-        if (child.material.color) {
-          child.material.color.set(0xffffff);
-        }
+
+        // ✨ 金属っぽい質感
+        child.material.metalness = 1.0;
+        child.material.roughness = 0.1;
+
+        // 色を固定したい場合だけ↓
+        // child.material.color.set(0xdddddd);
       }
     });
 
-    model.scale.set(1, 1, 1);
+    // 🔍 小さかったら拡大
+    model.scale.set(10, 10, 10);
     model.position.set(0, 0, 0);
     scene.add(model);
   },
   undefined,
-  function (error) {
+  (error) => {
     console.error('エラー発生:', error);
   }
 );
@@ -70,17 +69,17 @@ camera.position.set(0, 1, 5);
 function animate() {
   requestAnimationFrame(animate);
 
-  // 自動くるくる（ユーザーが触っていないときだけ）
+  // ⏱ 自動回転（触ってないときだけ）
   if (model && !isUserInteracting) {
-    model.rotation.y += 0.01; // ← 前よりちょい速めに！
+    model.rotation.y += 0.015; // ← 少し速め
   }
 
-  controls.update(); // 惰性回転のために必要
+  controls.update(); // 惰性効果
   renderer.render(scene, camera);
 }
 animate();
 
-// ウィンドウリサイズ対応
+// リサイズ対応
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();

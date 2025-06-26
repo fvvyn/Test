@@ -1,12 +1,12 @@
-// Three.js シーン初期化
+// Three.js 初期設定
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0xffffff); // 背景を白に
+renderer.setClearColor(0xffffff); // 背景：白
 document.body.appendChild(renderer.domElement);
 
-// 光源設定
+// 光源（環境光＋方向性ライト＋ヘミスフィア）
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambientLight);
 
@@ -18,14 +18,16 @@ const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.4);
 hemiLight.position.set(0, 20, 0);
 scene.add(hemiLight);
 
-// カメラ操作（OrbitControls）
+// カメラ操作コントロール
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;       // ← 惰性くるくるON！
+controls.dampingFactor = 0.05;       // ← 惰性の強さ（好みで調整）
 
-// モデルとユーザー操作フラグ
+// 自動回転制御用
 let model;
 let isUserInteracting = false;
 
-// ユーザー操作の検出（OrbitControls）
+// ユーザーが触ったら自動回転を止める
 controls.addEventListener('start', () => {
   isUserInteracting = true;
 });
@@ -33,7 +35,7 @@ controls.addEventListener('end', () => {
   isUserInteracting = false;
 });
 
-// モデル読み込み（GLTF）
+// モデル読み込み（GLTF形式）
 const loader = new THREE.GLTFLoader();
 loader.load(
   'base.glb',
@@ -61,19 +63,19 @@ loader.load(
   }
 );
 
-// カメラ位置
+// カメラ初期位置
 camera.position.set(0, 1, 5);
 
-// 描画ループ
+// アニメーションループ
 function animate() {
   requestAnimationFrame(animate);
 
-  // 自動回転（ユーザー操作中でない場合）
+  // 自動くるくる（ユーザーが触っていないときだけ）
   if (model && !isUserInteracting) {
-    model.rotation.y += 0.005;
+    model.rotation.y += 0.01; // ← 前よりちょい速めに！
   }
 
-  controls.update();
+  controls.update(); // 惰性回転のために必要
   renderer.render(scene, camera);
 }
 animate();

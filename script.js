@@ -35,7 +35,7 @@ controls.addEventListener('end', () => isUserInteracting = false);
 
 // ロゴ読み込み（Blenderで原点調整済み）
 const loader = new THREE.GLTFLoader();
-loader.load('fvvynlogo.glb', function (gltf) {
+loader.load('fvvynmetal.glb', function (gltf) {
   model = gltf.scene;
 
   model.traverse((child) => {

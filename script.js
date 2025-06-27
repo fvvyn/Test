@@ -9,7 +9,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputEncoding = THREE.sRGBEncoding;
 document.body.appendChild(renderer.domElement);
 
-// 環境マップ
+// 環境マップ設定
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
 new THREE.RGBELoader()
@@ -21,24 +21,48 @@ new THREE.RGBELoader()
     pmremGenerator.dispose();
   });
 
-// ライト
+// ライト設定
 scene.add(new THREE.AmbientLight(0xffffff, 0.4));
 const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
 dirLight.position.set(5, 10, 7.5);
 scene.add(dirLight);
 
-// OrbitControls 設定
+// OrbitControls
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.rotateSpeed = 2.5;
-controls.enableZoom = false; // ズーム禁止
-controls.enablePan = false;  // ← 二本指パン禁止！！
+controls.enableZoom = false;
+controls.enablePan = false;
 
 let model, pivot;
 let isUserInteracting = false;
-controls.addEventListener('start', () => isUserInteracting = true);
-controls.addEventListener('end', () => isUserInteracting = false);
+
+controls.addEventListener('start', () => {
+  isUserInteracting = true;
+
+  // 操作中は片面表示（オプション）
+  if (model) {
+    model.traverse(child => {
+      if (child.isMesh && child.material) {
+        child.material.side = THREE.FrontSide;
+      }
+    });
+  }
+});
+
+controls.addEventListener('end', () => {
+  isUserInteracting = false;
+
+  // 操作終了後、両面に戻す
+  if (model) {
+    model.traverse(child => {
+      if (child.isMesh && child.material) {
+        child.material.side = THREE.DoubleSide;
+      }
+    });
+  }
+});
 
 // モデル読み込み
 const loader = new THREE.GLTFLoader();
@@ -50,6 +74,7 @@ loader.load('fvvynmetal.glb', function (gltf) {
       child.material.metalness = 1.0;
       child.material.roughness = 0.1;
       child.material.color = new THREE.Color(0xffffff);
+      child.material.side = THREE.DoubleSide;
     }
   });
 
@@ -63,12 +88,12 @@ loader.load('fvvynmetal.glb', function (gltf) {
   console.error('モデル読み込みエラー:', error);
 });
 
-// アニメーション
+// アニメーションループ
 function animate() {
   requestAnimationFrame(animate);
 
   if (pivot && !isUserInteracting) {
-    pivot.rotation.y += 0.08; // ← 回転スピード上げた🔥
+    pivot.rotation.y += 0.06; // ← 自動回転スピード
   }
 
   controls.update();
@@ -76,7 +101,7 @@ function animate() {
 }
 animate();
 
-// リサイズ対応
+// ウィンドウリサイズ対応
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();

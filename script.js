@@ -31,7 +31,7 @@ scene.add(dirLight);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
-controls.rotateSpeed = 1.5;
+controls.rotateSpeed = 2.5;
 controls.enableZoom = false; // ズーム禁止
 controls.enablePan = false;  // ← 二本指パン禁止！！
 
@@ -53,7 +53,7 @@ loader.load('fvvynmetal.glb', function (gltf) {
     }
   });
 
-  model.scale.setScalar(2.0);
+  model.scale.setScalar(1.0);
   model.position.set(0, 0, 0);
 
   pivot = new THREE.Object3D();
@@ -68,7 +68,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   if (pivot && !isUserInteracting) {
-    pivot.rotation.y += 0.03; // ← 回転スピード上げた🔥
+    pivot.rotation.y += 0.08; // ← 回転スピード上げた🔥
   }
 
   controls.update();

@@ -38,7 +38,7 @@ controls.addEventListener('end', () => {
 // モデル読み込み（GLTF形式）
 const loader = new THREE.GLTFLoader();
 loader.load(
-  'base.glb',
+  'fvvynlogo.glb',
   function (gltf) {
     model = gltf.scene;
 
@@ -72,7 +72,7 @@ function animate() {
 
   // 自動くるくる（ユーザーが触っていないときだけ）
   if (model && !isUserInteracting) {
-    model.rotation.y += 0.01; // ← 前よりちょい速めに！
+    model.rotation.y += 0.02; // ← 前よりちょい速めに！
   }
 
   controls.update(); // 惰性回転のために必要

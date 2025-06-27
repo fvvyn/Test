@@ -2,21 +2,18 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>base.glあああb 表示テスト</title>
+  <title>FVVYN ロゴ3D表示</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background-color: white; /* 背景色（白） */
+      background-color: white;
       overflow: hidden;
-      font-family: sans-serif;
     }
-
     canvas {
       display: block;
     }
-
     #info {
       position: absolute;
       top: 10px;
@@ -26,16 +23,19 @@
       padding: 8px 12px;
       border-radius: 8px;
       font-size: 14px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
-  <div id="info">base.glb viewer</div>
+  <div id="info">FVVYN ロゴビューア ✨</div>
 
-  <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://unpkg.com/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- Three.js & 拡張ローダーたち -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/RGBELoader.js"></script>
+
+  <!-- JS本体 -->
   <script src="script.js"></script>
 </body>
 </html>

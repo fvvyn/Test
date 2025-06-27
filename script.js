@@ -28,7 +28,6 @@ const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 
-// モデル読み込み
 let model, pivot;
 let isUserInteracting = false;
 controls.addEventListener('start', () => isUserInteracting = true);
@@ -38,6 +37,7 @@ const loader = new THREE.GLTFLoader();
 loader.load('fvvynlogo.glb', function (gltf) {
   model = gltf.scene;
 
+  // マテリアル調整
   model.traverse((child) => {
     if (child.isMesh && child.material) {
       child.material.side = THREE.DoubleSide;
@@ -47,19 +47,25 @@ loader.load('fvvynlogo.glb', function (gltf) {
     }
   });
 
-  // サイズ＆中心調整
-  const box = new THREE.Box3().setFromObject(model);
+  // クローンしてボックス取得（元のモデルは弄らない）
+  const tempModel = model.clone();
+  scene.add(tempModel);
+  const box = new THREE.Box3().setFromObject(tempModel);
+  scene.remove(tempModel);
+
+  // 中心取得して移動（回転軸がズレないようにする）
   const center = new THREE.Vector3();
   box.getCenter(center);
-  model.position.sub(center); // 中心を原点に移動
+  model.position.sub(center); // 原点へ移動
 
+  // サイズ取得してスケーリング
   const size = new THREE.Vector3();
   box.getSize(size);
   const maxDim = Math.max(size.x, size.y, size.z);
   const scale = 3 / maxDim; // 見やすいサイズに調整
   model.scale.setScalar(scale);
 
-  // モデルをpivotに追加（中心回転のため）
+  // ピボットに追加して回転軸を中心に
   pivot = new THREE.Object3D();
   pivot.add(model);
   scene.add(pivot);
@@ -74,7 +80,7 @@ camera.position.set(0, 0, 5);
 function animate() {
   requestAnimationFrame(animate);
   if (pivot && !isUserInteracting) {
-    pivot.rotation.y += 0.01; // 中心回転
+    pivot.rotation.y += 0.01;
   }
   controls.update();
   renderer.render(scene, camera);

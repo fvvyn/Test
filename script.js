@@ -42,7 +42,7 @@ controls.addEventListener('end', () => isUserInteracting = false);
 
 // モデル読み込み
 const loader = new THREE.GLTFLoader();
-loader.load('fvvynlogo.glb', function (gltf) {
+loader.load('fvvynmetal.glb', function (gltf) {
   model = gltf.scene;
 
   model.traverse((child) => {

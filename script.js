@@ -1,13 +1,15 @@
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffffff); // ← 背景白！
+scene.background = new THREE.Color(0xffffff); // 背景：白
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 0, 5);
+
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputEncoding = THREE.sRGBEncoding;
 document.body.appendChild(renderer.domElement);
 
-// 環境マップで反射
+// HDR 環境マップ
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
 new THREE.RGBELoader()
@@ -25,17 +27,21 @@ const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
 dirLight.position.set(5, 10, 7.5);
 scene.add(dirLight);
 
-// カメラ操作
+// OrbitControls（ズーム禁止・感度アップ）
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
+controls.rotateSpeed = 1.5;
+controls.zoomSpeed = 1.2;
+controls.panSpeed = 1.2;
+controls.enableZoom = false; // ← ズーム禁止！
 
 let model, pivot;
 let isUserInteracting = false;
 controls.addEventListener('start', () => isUserInteracting = true);
 controls.addEventListener('end', () => isUserInteracting = false);
 
-// ロゴ読み込み（原点調整済み前提！）
+// ロゴ読み込み
 const loader = new THREE.GLTFLoader();
 loader.load('fvvynmetal.glb', function (gltf) {
   model = gltf.scene;
@@ -48,8 +54,7 @@ loader.load('fvvynmetal.glb', function (gltf) {
     }
   });
 
-  // ここでスケールを上げてロゴを大きく表示
-  model.scale.setScalar(5); // ← ← ← サイズ調整ここ！！
+  model.scale.setScalar(3.5); // ← ロゴちょい小さめに調整！
 
   pivot = new THREE.Object3D();
   pivot.add(model);
@@ -57,26 +62,6 @@ loader.load('fvvynmetal.glb', function (gltf) {
 }, undefined, function (error) {
   console.error('モデル読み込みエラー:', error);
 });
-
-// スモーク追加（背景白に合う濃さ）
-const smokeParticles = [];
-const smokeTexture = new THREE.TextureLoader().load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/particles/smoke.png');
-const smokeMaterial = new THREE.SpriteMaterial({ map: smokeTexture, transparent: true, opacity: 0.2 });
-
-for (let i = 0; i < 20; i++) {
-  const smoke = new THREE.Sprite(smokeMaterial);
-  smoke.position.set(
-    (Math.random() - 0.5) * 10,
-    (Math.random() - 0.5) * 5,
-    (Math.random() - 0.5) * 5
-  );
-  smoke.scale.set(10, 10, 1);
-  scene.add(smoke);
-  smokeParticles.push(smoke);
-}
-
-// カメラ位置
-camera.position.set(0, 0, 5);
 
 // アニメーション
 function animate() {
@@ -86,17 +71,12 @@ function animate() {
     pivot.rotation.y += 0.01;
   }
 
-  // スモーク回転
-  smokeParticles.forEach(p => {
-    p.rotation += 0.002;
-  });
-
   controls.update();
   renderer.render(scene, camera);
 }
 animate();
 
-// リサイズ対応
+// ウィンドウサイズ対応
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();

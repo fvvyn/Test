@@ -1,41 +1,29 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>FVVYN ロゴ3D表示</title>
+  <meta charset="UTF-8" />
+  <title>FVVYN 3Dロゴ</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background-color: white;
+      background-color: white; /* 背景白 */
       overflow: hidden;
+      font-family: sans-serif;
+      touch-action: none; /* ピンチズーム禁止！ */
     }
+
     canvas {
       display: block;
-    }
-    #info {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(255, 255, 255, 0.8);
-      color: #333;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <div id="info">FVVYN ロゴビューア ✨</div>
-
-  <!-- Three.js & 拡張ローダーたち -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/RGBELoader.js"></script>
-
-  <!-- JS本体 -->
+  <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/loaders/RGBELoader.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

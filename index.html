@@ -1,24 +1,85 @@
-<!DOCTYPE html>
+　<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>360 Elevator View</title>
+  <title>360 Elevator View（完全スワイプ対応）</title>
   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
   <style>
     html, body {
       margin: 0;
       height: 100%;
       overflow: hidden;
+      touch-action: none;
     }
   </style>
 </head>
 <body>
   <a-scene>
-    <!-- 背景画像（上下左右360度） -->
+    <!-- 背景360度画像 -->
     <a-sky src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/sechelt.jpg"></a-sky>
 
-    <!-- デフォルトカメラ：look-controlsは初期設定が一番安定 -->
-    <a-entity camera look-controls wasd-controls="false" position="0 1.6 0"></a-entity>
+    <!-- カメラエンティティ -->
+    <a-entity id="rig" camera custom-look position="0 1.6 0"></a-entity>
   </a-scene>
+
+  <script>
+    AFRAME.registerComponent('custom-look', {
+      init: function () {
+        this.isDragging = false;
+        this.previousX = 0;
+        this.previousY = 0;
+        this.rotation = { x: 0, y: 0 };
+
+        const el = this.el;
+        const canvas = this.el.sceneEl.canvas;
+
+        const updateRotation = (dx, dy) => {
+          this.rotation.y -= dx * 0.005;
+          this.rotation.x -= dy * 0.005;
+          this.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.rotation.x));
+          el.object3D.rotation.set(this.rotation.x, this.rotation.y, 0);
+        };
+
+        document.addEventListener('mousedown', (e) => {
+          this.isDragging = true;
+          this.previousX = e.clientX;
+          this.previousY = e.clientY;
+        });
+
+        document.addEventListener('mouseup', () => {
+          this.isDragging = false;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+          if (!this.isDragging) return;
+          const dx = e.clientX - this.previousX;
+          const dy = e.clientY - this.previousY;
+          updateRotation(dx, dy);
+          this.previousX = e.clientX;
+          this.previousY = e.clientY;
+        });
+
+        // タッチ対応
+        document.addEventListener('touchstart', (e) => {
+          this.isDragging = true;
+          this.previousX = e.touches[0].clientX;
+          this.previousY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', () => {
+          this.isDragging = false;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+          if (!this.isDragging) return;
+          const dx = e.touches[0].clientX - this.previousX;
+          const dy = e.touches[0].clientY - this.previousY;
+          updateRotation(dx, dy);
+          this.previousX = e.touches[0].clientX;
+          this.previousY = e.touches[0].clientY;
+        });
+      }
+    });
+  </script>
 </body>
 </html>

@@ -15,9 +15,7 @@
     </style>
   </head>
   <body>
-    <!-- three.js本体 -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
-    <!-- カメラ操作用 -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/controls/OrbitControls.min.js"></script>
     <script>
       const scene = new THREE.Scene();
@@ -35,8 +33,8 @@
 
       const loader = new THREE.TextureLoader();
       loader.load(
-        // ✅ 360度 .jpg 画像（外部CDNで安定してるやつ）
-        'https://rawcdn.githack.com/mrdoob/three.js/dev/examples/textures/equirectangular/royal_esplanade_1k.jpg',
+        // ✅ NASAの地球の360度画像に差し替えたよ！
+        'https://upload.wikimedia.org/wikipedia/commons/f/f6/Equirectangular-projection.jpg',
         (texture) => {
           texture.mapping = THREE.EquirectangularReflectionMapping;
 

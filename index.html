@@ -77,6 +77,16 @@
       startX = e.touches[0].clientX
       startY = e.touches[0].clientY
     })
+    
+  // ジャイロ（DeviceOrientation）をブロック
+  window.addEventListener('deviceorientation', function (e) {
+    e.stopImmediatePropagation()
+  }, true)
+
+  window.addEventListener('deviceorientationabsolute', function (e) {
+    e.stopImmediatePropagation()
+  }, true)
+
   </script>
 </body>
 </html>

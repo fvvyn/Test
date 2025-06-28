@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>Elevator 360° View 🚪</title>
+  <meta charset="UTF-8">
+  <title>Full 360° Elevator View</title>
   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
   <style>
     html, body {
@@ -14,11 +14,14 @@
 </head>
 <body>
   <a-scene embedded>
-    <!-- 360度背景（上も下も見渡せる） -->
+    <!-- 背景に360°画像（equirectangular） -->
     <a-sky src="studio.jpg" rotation="0 -90 0"></a-sky>
 
-    <!-- カメラ（ジャイロなし） -->
-    <a-entity camera look-controls="magicWindowTrackingEnabled: false; touchEnabled: true; mouseEnabled: true"></a-entity>
+    <!-- カメラ：上下360度操作OK・ジャイロなし -->
+    <a-entity camera
+              look-controls="magicWindowTrackingEnabled: false; touchEnabled: true; mouseEnabled: true"
+              wasd-controls-enabled="false">
+    </a-entity>
   </a-scene>
 </body>
 </html>

@@ -1,193 +1,66 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FVVYN ロゴくるくる表示</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background-color: white; /* 背景白 */
-      overflow: hidden;
-      font-family: "Inter", sans-serif; /* Inter フォントを使用 */
-      touch-action: none; /* スマホのピンチ＆パン禁止 */
-    }
-
-    canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* ボタンとリンクをCanvasの上に配置するためのスタイル */
-    .overlay-container {
-      position: absolute;
-      bottom: 5vh; /* 画面下から少し上げる */
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem; /* 要素間のスペース */
-      z-index: 10; /* Canvasより手前に表示 */
-      align-items: center; /* 中央揃え */
-      width: 90%; /* 幅を調整 */
-      max-width: 400px; /* 最大幅を設定 */
-    }
-
-    /* ENTERボタンのスタイル */
-    .btn {
-      @apply bg-blue-500 hover:bg-blue-700 text-white font-extrabold italic py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-full text-center;
-    }
-
-    /* Instagramリンクのスタイル */
-    .instagram-link {
-      @apply text-gray-700 hover:text-gray-900 text-lg font-extrabold italic transition duration-300 ease-in-out transform hover:scale-105;
-    }
-  </style>
-</head>
-<body class="relative">
-  <!-- Three.js & 必要なローダーたち -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/RGBELoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
-
-  <!-- ボタンとリンクを配置するコンテナ -->
-  <div class="overlay-container">
-    <!-- ENTERボタン -->
-    <button id="enterButton" class="btn">ENTER</button>
-    <!-- Instagramリンク -->
-    <a href="https://instagram.com/fvvyn_officia" target="_blank" class="instagram-link">Instagram</a>
-  </div>
-
-  <!-- メインスクリプト -->
-  <script>
-    // Three.js シーンのセットアップ
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff); // 背景を白に設定
-
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 5); // カメラの位置を設定
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true }); // アンチエイリアスを有効に
-    renderer.setSize(window.innerWidth, window.innerHeight); // レンダラーのサイズを設定
-    renderer.outputEncoding = THREE.sRGBEncoding; // 出力エンコーディングを設定
-    document.body.appendChild(renderer.domElement); // DOMにキャンバスを追加
-
-    // 環境マップ設定
-    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    pmremGenerator.compileEquirectangularShader(); // 環境マップシェーダーをコンパイル
-    new THREE.RGBELoader()
-      .setPath('https://rawcdn.githack.com/mrdoob/three.js/dev/examples/textures/equirectangular/')
-      .load('royal_esplanade_1k.hdr', function (texture) {
-        const envMap = pmremGenerator.fromEquirectangular(texture).texture;
-        scene.environment = envMap; // シーンの環境マップを設定
-        texture.dispose(); // テクスチャを破棄
-        pmremGenerator.dispose(); // ジェネレーターを破棄
-      });
-
-    // ライト設定
-    scene.add(new THREE.AmbientLight(0xffffff, 0.4)); // 環境光を追加
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2); // 指向性ライトを追加
-    dirLight.position.set(5, 10, 7.5); // ライトの位置を設定
-    scene.add(dirLight);
-
-    // OrbitControls
-    const controls = new THREE.OrbitControls(camera, renderer.domElement); // OrbitControlsを初期化
-    controls.enableDamping = true; // ダンピングを有効に
-    controls.dampingFactor = 0.05; // ダンピング係数を設定
-    controls.rotateSpeed = 2.5; // 回転速度を設定
-    controls.enableZoom = false; // ズームを無効に
-    controls.enablePan = false; // パンを無効に
-
-    let model, pivot;
-    let isUserInteracting = false; // ユーザーが操作中かどうかを示すフラグ
-
-    controls.addEventListener('start', () => {
-      isUserInteracting = true; // 操作開始時にフラグを設定
-
-      // 操作中は片面表示（オプション）
-      if (model) {
-        model.traverse(child => {
-          if (child.isMesh && child.material) {
-            child.material.side = THREE.FrontSide; // 片面表示に設定
-          }
-        });
+  <head>
+    <meta charset="UTF-8" />
+    <title>360° Background Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
       }
-    });
-
-    controls.addEventListener('end', () => {
-      isUserInteracting = false; // 操作終了時にフラグをリセット
-
-      // 操作終了後、両面に戻す
-      if (model) {
-        model.traverse(child => {
-          if (child.isMesh && child.material) {
-            child.material.side = THREE.DoubleSide; // 両面表示に設定
-          }
-        });
+      canvas {
+        display: block;
       }
-    });
+    </style>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/controls/OrbitControls.min.js"></script>
+    <script>
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
+      camera.position.set(0, 0, 0.1);
 
-    // モデル読み込み
-    const loader = new THREE.GLTFLoader(); // GLTFローダーを初期化
-    // fvvynmetal.glbはカレントディレクトリに存在する必要があります
-    loader.load('fvvynmetal.glb', function (gltf) {
-      model = gltf.scene; // モデルを取得
+      const renderer = new THREE.WebGLRenderer({antialias: true});
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
 
-      model.traverse((child) => {
-        if (child.isMesh && child.material) {
-          child.material.metalness = 1.0; // メタルネスを設定
-          child.material.roughness = 0.1; // ラフネスを設定
-          child.material.color = new THREE.Color(0xffffff); // 色を白に設定
-          child.material.side = THREE.DoubleSide; // 両面表示に設定
+      const textureLoader = new THREE.TextureLoader();
+      textureLoader.load(
+        'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/equirectangular/royal_esplanade_1k.jpg',
+        function (texture) {
+          texture.mapping = THREE.EquirectangularReflectionMapping;
+          scene.background = texture;
+
+          const geometry = new THREE.SphereGeometry(500, 60, 40);
+          geometry.scale(-1, 1, 1); // 内側を表示するため反転
+          const material = new THREE.MeshBasicMaterial({ map: texture });
+          const sphere = new THREE.Mesh(geometry, material);
+          scene.add(sphere);
         }
-      });
+      );
 
-      model.scale.setScalar(1.0); // モデルのスケールを設定
-      model.position.set(0, 0, 0); // モデルの位置を設定
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false;
+      controls.enablePan = false;
+      controls.rotateSpeed = 0.3;
+      controls.minPolarAngle = 0; // 上限
+      controls.maxPolarAngle = Math.PI; // 下限
 
-      pivot = new THREE.Object3D(); // ピボットオブジェクトを作成
-      pivot.add(model); // ピボットにモデルを追加
-      scene.add(pivot); // シーンにピボットを追加
-    }, undefined, function (error) {
-      console.error('モデル読み込みエラー:', error); // モデル読み込みエラーをコンソールに出力
-    });
-
-    // アニメーションループ
-    function animate() {
-      requestAnimationFrame(animate); // 次のフレームをリクエスト
-
-      if (pivot && !isUserInteracting) {
-        pivot.rotation.y += 0.006; // ← 自動回転スピード（調整済み）
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
       }
+      animate();
 
-      controls.update(); // OrbitControlsを更新
-      renderer.render(scene, camera); // シーンをレンダリング
-    }
-
-    // ウィンドウロード時にアニメーションを開始
-    window.onload = function () {
-        animate();
-    };
-
-
-    // ウィンドウリサイズ対応
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight; // アスペクト比を更新
-      camera.updateProjectionMatrix(); // プロジェクション行列を更新
-      renderer.setSize(window.innerWidth, window.innerHeight); // レンダラーのサイズを更新
-    });
-
-    // ENTERボタンのクリックイベント
-    document.getElementById('enterButton').addEventListener('click', () => {
-      window.location.href = 'https://fvvyn.stores.jp/'; // 指定のURLへ遷移
-    });
-  </script>
-</body>
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    </script>
+  </body>
 </html>
 

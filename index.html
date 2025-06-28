@@ -2,7 +2,7 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <title>360° Background Viewer</title>
+    <title>360° Viewer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
       body {
@@ -26,18 +26,22 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
-      const textureLoader = new THREE.TextureLoader();
-      textureLoader.load(
-        'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/equirectangular/royal_esplanade_1k.jpg',
-        function (texture) {
+      const loader = new THREE.TextureLoader();
+      loader.load(
+        // ✅ 360度画像（PolyHavenから取得した無料画像）
+        'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr',
+        (texture) => {
           texture.mapping = THREE.EquirectangularReflectionMapping;
-          scene.background = texture;
 
           const geometry = new THREE.SphereGeometry(500, 60, 40);
-          geometry.scale(-1, 1, 1); // 内側を表示するため反転
+          geometry.scale(-1, 1, 1);
           const material = new THREE.MeshBasicMaterial({ map: texture });
-          const sphere = new THREE.Mesh(geometry, material);
-          scene.add(sphere);
+          const mesh = new THREE.Mesh(geometry, material);
+          scene.add(mesh);
+        },
+        undefined,
+        (error) => {
+          console.error('読み込み失敗:', error);
         }
       );
 
@@ -45,14 +49,13 @@
       controls.enableZoom = false;
       controls.enablePan = false;
       controls.rotateSpeed = 0.3;
-      controls.minPolarAngle = 0; // 上限
-      controls.maxPolarAngle = Math.PI; // 下限
 
       function animate() {
         requestAnimationFrame(animate);
         controls.update();
         renderer.render(scene, camera);
       }
+
       animate();
 
       window.addEventListener('resize', () => {
@@ -63,4 +66,3 @@
     </script>
   </body>
 </html>
-

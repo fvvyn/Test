@@ -1,73 +1,17 @@
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <title>360° Viewer</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
-      canvas {
-        display: block;
-      }
-    </style>
-  </head>
-  <body>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/controls/OrbitControls.min.js"></script>
-    <script>
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        1,
-        1100
-      );
-      camera.position.set(0, 0, 0.1);
-
-      const renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
-
-      const loader = new THREE.TextureLoader();
-      loader.load(
-        // ✅ NASAの地球の360度画像に差し替えたよ！
-        'https://upload.wikimedia.org/wikipedia/commons/f/f6/Equirectangular-projection.jpg',
-        (texture) => {
-          texture.mapping = THREE.EquirectangularReflectionMapping;
-
-          const geometry = new THREE.SphereGeometry(500, 60, 40);
-          geometry.scale(-1, 1, 1);
-          const material = new THREE.MeshBasicMaterial({ map: texture });
-          const mesh = new THREE.Mesh(geometry, material);
-          scene.add(mesh);
-        },
-        undefined,
-        (err) => {
-          console.error('画像の読み込みに失敗したよ😢', err);
-        }
-      );
-
-      const controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableZoom = false;
-      controls.enablePan = false;
-      controls.rotateSpeed = 0.3;
-
-      function animate() {
-        requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
-      }
-
-      animate();
-
-      window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
-    </script>
-  </body>
+<!doctype html>
+<html>
+<head>
+<title>360 Panorama Viewer : A-Frame : Image (Simple)</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+</head>
+<body>
+<a-scene vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+<a-assets>
+<img id="sky-image" src="sky.jpg">
+</a-assets>
+<a-sky src="#sky-image" rotation="0 -130 0"></a-sky>
+</a-scene>
+</body>
 </html>

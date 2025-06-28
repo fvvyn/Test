@@ -15,21 +15,28 @@
     </style>
   </head>
   <body>
+    <!-- three.js本体 -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+    <!-- カメラ操作用 -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/controls/OrbitControls.min.js"></script>
     <script>
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        1,
+        1100
+      );
       camera.position.set(0, 0, 0.1);
 
-      const renderer = new THREE.WebGLRenderer({antialias: true});
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
       const loader = new THREE.TextureLoader();
       loader.load(
-        // ✅ 360度画像（PolyHavenから取得した無料画像）
-        'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr',
+        // ✅ 360度 .jpg 画像（外部CDNで安定してるやつ）
+        'https://rawcdn.githack.com/mrdoob/three.js/dev/examples/textures/equirectangular/royal_esplanade_1k.jpg',
         (texture) => {
           texture.mapping = THREE.EquirectangularReflectionMapping;
 
@@ -40,8 +47,8 @@
           scene.add(mesh);
         },
         undefined,
-        (error) => {
-          console.error('読み込み失敗:', error);
+        (err) => {
+          console.error('画像の読み込みに失敗したよ😢', err);
         }
       );
 
